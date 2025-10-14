@@ -1,186 +1,126 @@
-# Spring Boot + MongoDB CRUD API (Let's Play)
+#  Let's Play API
 
-## 1. Project Overview
-This project is a **RESTful CRUD API** built with **Spring Boot** and **MongoDB**. It provides functionalities for managing **users** and **products**, secured with JWT-based authentication and role-based authorization (**USER** vs **ADMIN**). The API is protected by HTTPS with a self-signed SSL certificate.
-
-The API follows best practices: input validation, password hashing with BCrypt, DTO usage, global exception handling (no raw 5XX errors), and clean layered architecture.
-
-### Key Features
-- **User Management:** CRUD operations for users (ADMIN only)
-- **Product Management:** CRUD operations for products (public GET, modifications require auth)
-- **Authentication & Authorization:** JWT login/register, role checks
-- **Security:** BCrypt password hashing, DTOs, validation, SSL
-- **Error Handling:** Global exception handler with proper HTTP codes
+A **RESTful CRUD API** built with **Spring Boot** and **MongoDB**, providing secure user and product management functionalities.  
+Implements **JWT authentication**, **role-based authorization**, **BCrypt password hashing**, and **input validation** following industry best practices.
 
 ---
 
-## 2. Project Structure
-```
-src/
- ├── main/
- │    ├── java/com/example/letsplay/
- │    │    ├── controller/         # REST controllers (Auth, Users, Products)
- │    │    ├── converter/          # Entity ↔ DTO mappers
- │    │    ├── exceptions/         # Custom exception classes
- │    │    ├── model/              # MongoDB entities (User, Product)
- │    │    ├── repository/         # Spring Data MongoDB repositories
- │    │    ├── response/           # Standardized API responses
- │    │    ├── security/           # JWT, SecurityConfig, filters
- │    │    ├── services/           # Business logic layer
- │    │    ├── utils/              # Utility classes
- │    │    └── LetsplayApplication.java   # Main application entry point
- │    └── resources/
- │         ├── application.properties     # App configuration
- │         └── letsplay.p12               # SSL certificate (after generation)
- ├── test/java/com/example/letsplay/
- │    └── LetsplayApplicationTests.java   # Test suite
- ├── API-Documentation.md
- ├── README.md
- ├── pom.xml
- ├── mvnw / mvnw.cmd
-```
+##  Project Description
+
+This project demonstrates how to build a **secure CRUD API** following **RESTful principles**.  
+It includes:
+
+- User registration, login, and full CRUD management  
+- Product CRUD operations  
+- Role-based and ownership-based access control  
+- Centralized error handling and HTTPS encryption
 
 ---
 
-## 3. Prerequisites
-- **Java (JDK):** 21+
-- **Maven:** 3.8+
-- **MongoDB:** Community Edition, default port 27017
-- **API Client:** Postman or curl
+##  Features
+
+- **User Management:** Registration, login, and CRUD operations (admin access).  
+- **Product Management:** Full CRUD operations for products.  
+- **Authentication:** Secure token-based authentication using JWT.  
+- **Authorization:** Role-based access control (`USER`, `ADMIN`) and ownership rules.  
+- **Security:** BCrypt password hashing, HTTPS encryption, and DTO validation.  
+- **Error Handling:** Global exception handling to prevent raw 5xx responses.
 
 ---
 
-## 4. SSL Setup
+##  Technologies Used
 
-### Generate a Self-Signed SSL Certificate
-Navigate to `src/main/resources` and run:
-```bash
-keytool -genkeypair -alias letsplay -keyalg RSA -keysize 2048 \
-  -storetype PKCS12 -keystore letsplay.p12 -validity 365 \
-  -dname "CN=localhost, OU=gritlab, O=gritlab, L=Mariehamn, S=Åland, C=FI" \
-  -storepass <your-password> -keypass <your-password>
-```
-
- Replace `<your-password>` with a strong one. Configure it in `application.properties`:
-```properties
-server.port=8443
-server.ssl.enabled=true
-server.ssl.key-store=classpath:letsplay.p12
-server.ssl.key-store-password=<your-password>
-server.ssl.key-store-type=PKCS12
-server.ssl.key-alias=letsplay
-```
+- **Java 21**  
+- **Spring Boot 3**  
+- **Spring Security**  
+- **Spring Data MongoDB**  
+- **JWT (io.jsonwebtoken)**  
+- **Maven**
 
 ---
 
-## 5. Configure MongoDB
-Export credentials:
-```bash
-export MONGO_USER=<username>
-export MONGO_PASSWORD=<password>
-```
+##  Prerequisites
 
-In `application.properties`:
-```properties
-spring.data.mongodb.uri=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/letsplay_db
-```
+| Tool | Version | Notes |
+|------|----------|-------|
+| Java | 17+ | Recommended: 21 |
+| Maven | 3.8+ | For build & run |
+| MongoDB | latest | Running at `mongodb://localhost:27017` |
 
 ---
 
-## 6. Build & Run
-```bash
-./mvnw clean install
-./mvnw spring-boot:run
-```
-Application runs at: `https://localhost:8443`
+##  Setup & Run
 
----
+1. **Clone the repository**
+   ```bash
+   git clone <your-repository-url>
+   cd lets-play
 
-## 7. Endpoints
+2. **Build the project**
+   ```bash
+   mvn clean install
 
-###  Auth
-| Method | Endpoint | Access | Description |
-|--------|----------|--------|-------------|
-| POST | `/api/v1/auth/register` | Public | Register new user |
-| POST | `/api/v1/auth/login` | Public | Login, returns JWT |
+3. **Run the application**
+   ```bash
+   mvn spring-boot : run
 
-###  Users (ADMIN only)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/users` | List users |
-| GET | `/api/v1/users/{id}` | Get user by id |
-| POST | `/api/v1/users` | Create user |
-| PUT | `/api/v1/users/{id}` | Update user |
-| DELETE | `/api/v1/users/{id}` | Delete user |
+4. **Access the API**
+   ```arduino
+    https://localhost:8443  
+       
 
-###  Products
-| Method | Endpoint | Access | Description |
-|--------|----------|--------|-------------|
-| GET | `/api/v1/products` | Public | List products |
-| GET | `/api/v1/products/{id}` | Public | Get product by id |
-| POST | `/api/v1/products` | USER, ADMIN | Create product |
-| PUT | `/api/v1/products/{id}` | ADMIN | Update product |
-| DELETE | `/api/v1/products/{id}` | ADMIN | Delete product |
 
----
+##   API Endpoints
 
-## 8. Role Matrix
-| Role | Permissions |
-|------|-------------|
-| USER | Register/login, view products, create products |
-| ADMIN | Full access: users & products management |
+**Authentication**
+| Method | Endpoint         | Access | Description                    |
+| ------ | ---------------- | ------ | ------------------------------ |
+| `POST` | `/auth/register` | Public | Register a new user            |
+| `POST` | `/auth/login`    | Public | Authenticate and receive a JWT |
 
----
 
-## 9. Example Requests
+**Users**
+| Method   | Endpoint      | Access          | Description    |
+| -------- | ------------- | --------------- | -------------- |
+| `GET`    | `/users`      | `ADMIN`         | Get all users  |
+| `GET`    | `/users/{id}` | `ADMIN`         | Get user by ID |
+| `PUT`    | `/users/{id}` | `ADMIN` or Self | Update user    |
+| `DELETE` | `/users/{id}` | `ADMIN`         | Delete user    |
 
-### Register
-```bash
-curl -X POST https://localhost:8443/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"Secret123","fullName":"Test User"}'
-```
 
-### Login
-```bash
-curl -X POST https://localhost:8443/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"Secret123"}'
-```
-Response:
-```json
-{ "accessToken": "<JWT_TOKEN>" }
-```
+**Products**
+| Method   | Endpoint         | Access             | Description          |
+| -------- | ---------------- | ------------------ | -------------------- |
+| `GET`    | `/products`      | Public             | Get all products     |
+| `GET`    | `/products/{id}` | Public             | Get product by ID    |
+| `POST`   | `/products`      | Authenticated User | Create a new product |
+| `PUT`    | `/products/{id}` | `ADMIN` or Owner   | Update a product     |
+| `DELETE` | `/products/{id}` | `ADMIN` or Owner   | Delete a product     |
 
-### Public Products
-```bash
-curl https://localhost:8443/api/v1/products
-```
 
-### Authenticated Create Product
-```bash
-curl -X POST https://localhost:8443/api/v1/products \
-  -H "Authorization: Bearer <JWT_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"iPhone 14","description":"128GB","price":799.99,"stock":5}'
-```
+##  Security Measures
 
----
+| Measure                   | Description                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| **Password Hashing**      | Passwords are hashed and salted using `BCryptPasswordEncoder`.                 |
+| **Input Validation**      | Bean Validation (`@NotBlank`, `@Email`, etc.) validates all incoming data.     |
+| **HTTPS**                 | Encrypts all data in transit for secure communication.                         |
+| **Authorization**         | `@PreAuthorize` ensures only authorized users access protected endpoints.      |
+| **Sensitive Information** | JWT secret is externalized; no passwords or secrets are returned in responses. |
 
-## 10. Security
-- BCrypt password hashing
-- DTO validation (`@NotBlank`, `@Email`, `@Size`, `@Positive`)
-- No sensitive data in responses
-- Global exception handling with 400/401/403/404/409
-- HTTPS enabled with SSL
 
----
+## Dependency Injection
 
-## 11. Testing
-- Use Postman or curl for manual testing
-- Automated tests in `LetsplayApplicationTests.java`
+This project uses constructor-based dependency injection instead of field injection (@Autowired).
 
----
+**Why this matters:**
 
- This README is aligned with the given project structure and audit requirements.
+   **Immutability:** Dependencies are declared final and cannot be reassigned.
 
+   **Clarity:** All dependencies are visible and required in the constructor.
+
+   **Testability:** Easier to pass mock objects for unit testing.
+
+## Author
+
+**Kateryna Ovsiienko**
