@@ -58,19 +58,31 @@ It includes:
 
 2. **Build the project**
    ```bash
-   mvn clean install
+   ./mvn clean install
 
 3. **Run the application**
    ```bash
-   mvn spring-boot : run
+   ./mvn spring-boot:run
 
 4. **Access the API**
    ```arduino
     https://localhost:8443  
+
        
+## Run with Maven Wrapper
 
+If Maven is not installed globally, you can still build and run the project using the provided Maven Wrapper.
 
-##   API Endpoints
+**For macOS / Linux:**
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+
+**For Windows:**
+mvnw.cmd clean install
+mvnw.cmd spring-boot:run
+
+##  API Endpoints
 
 **Authentication**
 | Method | Endpoint         | Access | Description                    |
