@@ -17,11 +17,11 @@ hs_err_pid*
 # Java
 *.class
 
-# Maven
-target/
-.mvn/
-mvnw
-mvnw.cmd
+# # Maven
+# target/
+# .mvn/
+# mvnw
+# mvnw.cmd
 
 # SSL / Keys
 *.p12
