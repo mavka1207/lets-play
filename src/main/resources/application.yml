@@ -11,13 +11,13 @@ spring:
 data:
 mongodb:
 uri: mongodb://localhost:27017/letsplay
+auto-index-creation: true
 
 
 security:
 jwt:
-# 256-bit base64 secret (example only — replace!)
-secret: "u1YF3z0mH0Yw1cU1b9Xq8rM1g5yO5e3q2r8s4p6t8v0w2y4x6z8A0B2C4D6E8F0="
-expiration-ms: 86400000
+    secret: "PASTE_BASE64_32B_OR_MORE"
+    expiration-ms: 86400000
 
 
 logging:
