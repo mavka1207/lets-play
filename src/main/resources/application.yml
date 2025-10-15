@@ -1,35 +1,22 @@
 server:
-port: 8443
-ssl:
-enabled: false # set to true when you add a keystore
-key-store: classpath:keystore.p12
-key-store-password: changeit
-key-store-type: PKCS12
-
+  port: 8443
+  ssl:
+    enabled: false            
+    key-store: classpath:keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
 
 spring:
-data:
-mongodb:
-uri: mongodb://localhost:27017/letsplay
-auto-index-creation: true
-
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/letsplay
+      auto-index-creation: true
 
 security:
-jwt:
-    secret: "PASTE_BASE64_32B_OR_MORE"
+  jwt:
+    secret: ${JWT_SECRET}
     expiration-ms: 86400000
 
-
 logging:
-level:
-org.springframework.security: INFO
-
-
-# --- Postman smoke tests (quick) ---
-# 1) Public GET products
-# GET https://localhost:8443/products
-# 2) Register
-# POST https://localhost:8443/auth/register { name,email,password }
-# 3) Login -> Token
-# 4) Create product (with Bearer <token>)
-# 5) Update/Delete product (owner or ADMIN)
+  level:
+    org.springframework.security: INFO
