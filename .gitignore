@@ -17,11 +17,9 @@ hs_err_pid*
 # Java
 *.class
 
-# # Maven
-# target/
-# .mvn/
-# mvnw
-# mvnw.cmd
+# Maven
+/target/
+
 
 # SSL / Keys
 *.p12
@@ -35,3 +33,4 @@ hs_err_pid*
 application-*.yml
 application-*.properties
 !application.properties
+/target/
