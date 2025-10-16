@@ -25,8 +25,8 @@ this.authService = authService;
 
 
 @PostMapping("/register")
-public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest req, @RequestParam(name="admin", defaultValue = "false") boolean admin) {
-String jwt = authService.register(req, admin);
+public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest req) {
+String jwt = authService.register(req);
 return ResponseEntity.ok(Map.of("token", jwt));
 }
 

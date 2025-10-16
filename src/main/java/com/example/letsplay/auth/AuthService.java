@@ -30,17 +30,20 @@ this.jwtService = jwtService;
 
 
 @Transactional
-public String register(RegisterRequest req, boolean asAdmin) {
-if (userRepo.existsByEmail(req.getEmail())) {
-throw new IllegalArgumentException("Email already in use");
-}
-User u = new User();
-u.setName(req.getName());
-u.setEmail(req.getEmail());
-u.setPassword(encoder.encode(req.getPassword()));
-u.setRole(asAdmin ? Role.ADMIN : Role.USER);
-userRepo.save(u);
-return jwtService.generateToken(u);
+public String register(RegisterRequest req) {
+    if (userRepo.existsByEmail(req.getEmail())) {
+        throw new IllegalArgumentException("Email already in use");
+    }
+    User u = new User();
+    u.setName(req.getName());
+    u.setEmail(req.getEmail());
+    u.setPassword(encoder.encode(req.getPassword()));
+    
+    // !!! ИСПРАВЛЕНО: Жестко присваиваем роль USER
+    u.setRole(Role.USER); 
+    
+    userRepo.save(u);
+    return jwtService.generateToken(u);
 }
 
 
