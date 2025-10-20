@@ -23,84 +23,84 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/** HTTP security (stateless + JWT) with clean 401/403 JSON. */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
+  private final JwtAuthenticationFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
+  public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+    this.jwtAuthFilter = jwtAuthFilter;
+  }
 
-    @Bean
-    public UserDetailsService userDetailsService(UserRepository repo) {
-        return email -> repo.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-    }
+  @Bean
+  public UserDetailsService userDetailsService(UserRepository repo) {
+    return email -> repo.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+  }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(c -> c.configurationSource(corsConfigurationSource()))
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling(e -> e
-                .authenticationEntryPoint((req, res, ex) -> {
-                    res.setStatus(401);
-                    res.setContentType("application/json");
-                    res.getWriter().write("{\"message\":\"Unauthorized\"}");
-                })
-                .accessDeniedHandler((req, res, ex) -> {
-                    res.setStatus(403);
-                    res.setContentType("application/json");
-                    res.getWriter().write("{\"message\":\"Forbidden\"}");
-                })
-            )
-            .authorizeHttpRequests(auth -> auth
-                // Разрешаем preflight-запросы для CORS
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(c -> c.configurationSource(corsConfigurationSource()))
+        .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(e -> e
+            .authenticationEntryPoint((req, res, ex) -> {
+              res.setStatus(401);
+              res.setContentType("application/json");
+              res.getWriter().write(
+                  "{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Unauthorized\",\"path\":\""
+                      + req.getRequestURI() + "\"}"
+              );
+            })
+            .accessDeniedHandler((req, res, ex) -> {
+              res.setStatus(403);
+              res.setContentType("application/json");
+              res.getWriter().write(
+                  "{\"status\":403,\"error\":\"Forbidden\",\"message\":\"Access denied\",\"path\":\""
+                      + req.getRequestURI() + "\"}"
+              );
+            })
+        )
+        .authorizeHttpRequests(auth -> auth
+            // Preflight CORS
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            // Public auth endpoints
+            .requestMatchers("/auth/**").permitAll()
+            // Public GET products (per requirements)
+            .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
+            // Everything else requires auth
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-                // Публичные эндпоинты аутентификации
-                .requestMatchers("/auth/**").permitAll()
+    return http.build();
+  }
 
-                // Публичные GET для продуктов (по требованиям)
-                .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration cfg = new CorsConfiguration();
+    cfg.setAllowedOrigins(List.of(
+        "http://localhost:3000", "https://localhost:3000",
+        "http://localhost:5173", "https://localhost:5173"
+    ));
+    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    cfg.setAllowCredentials(true);
+    cfg.setMaxAge(3600L);
 
-                // Всё остальное — только для аутентифицированных
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", cfg);
+    return source;
+  }
 
-        return http.build();
-    }
+  @Bean public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
-    // CORS-профиль для фронта (localhost:3000/5173 и т.п.)
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of(
-            "http://localhost:3000", "https://localhost:3000",
-            "http://localhost:5173", "https://localhost:5173"
-        ));
-        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        cfg.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", cfg);
-        return source;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // BCrypt = хеш + соль
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
-        return cfg.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+    return cfg.getAuthenticationManager();
+  }
 }

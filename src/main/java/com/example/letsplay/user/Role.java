@@ -1,4 +1,7 @@
 package com.example.letsplay.user;
 
-
-public enum Role { USER, ADMIN }
+/** Application roles. */
+public enum Role {
+  USER,
+  ADMIN
+}

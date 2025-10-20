@@ -1,56 +1,41 @@
 package com.example.letsplay.auth;
 
-
 import com.example.letsplay.user.Role;
 import com.example.letsplay.user.User;
 import com.example.letsplay.user.UserRepository;
-import com.example.letsplay.user.dto.LoginRequest;
-import com.example.letsplay.user.dto.RegisterRequest;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 
+/** Creates users, validates credentials, issues JWTs. */
 @Service
 public class AuthService {
-private final UserRepository userRepo;
-private final PasswordEncoder encoder;
-private final AuthenticationManager authManager;
-private final JwtService jwtService;
 
+  private final UserRepository users;
+  private final PasswordEncoder encoder;
+  private final JwtService jwt;
 
-public AuthService(UserRepository userRepo, PasswordEncoder encoder, AuthenticationManager authManager, JwtService jwtService) {
-this.userRepo = userRepo;
-this.encoder = encoder;
-this.authManager = authManager;
-this.jwtService = jwtService;
-}
+  public AuthService(UserRepository users, PasswordEncoder encoder, JwtService jwt) {
+    this.users = users; this.encoder = encoder; this.jwt = jwt;
+  }
 
-
-@Transactional
-public String register(RegisterRequest req) {
-    if (userRepo.existsByEmail(req.getEmail())) {
-        throw new IllegalArgumentException("Email already in use");
-    }
+  public String register(String name, String email, String rawPassword) {
+    users.findByEmail(email).ifPresent(u -> { throw new IllegalArgumentException("Email already in use"); });
     User u = new User();
-    u.setName(req.getName());
-    u.setEmail(req.getEmail());
-    u.setPassword(encoder.encode(req.getPassword()));
-    
-    // !!! ИСПРАВЛЕНО: Жестко присваиваем роль USER
-    u.setRole(Role.USER); 
-    
-    userRepo.save(u);
-    return jwtService.generateToken(u);
-}
+    u.setName(name);
+    u.setEmail(email);
+    u.setPassword(encoder.encode(rawPassword));
+    u.setRole(Role.USER);
+    users.save(u);
+    return jwt.generateToken(u);
+  }
 
-
-public String login(LoginRequest req) {
-var token = new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword());
-authManager.authenticate(token);
-var user = userRepo.findByEmail(req.getEmail()).orElseThrow();
-return jwtService.generateToken(user);
-}
+  public String login(String email, String rawPassword) {
+    User u = users.findByEmail(email).orElseThrow(() -> new NoSuchElementException("Invalid credentials"));
+    if (!encoder.matches(rawPassword, u.getPassword())) {
+      throw new NoSuchElementException("Invalid credentials");
+    }
+    return jwt.generateToken(u);
+  }
 }

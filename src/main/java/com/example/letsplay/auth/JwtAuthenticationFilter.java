@@ -1,6 +1,6 @@
 package com.example.letsplay.auth;
 
-
+import com.example.letsplay.user.User;
 import com.example.letsplay.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,48 +13,52 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
 import java.io.IOException;
 
-
+/**
+ * Reads Bearer token, validates it, and sets Authentication into the context.
+ * If token is missing/invalid we continue as anonymous (public endpoints still work).
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+  private final JwtService jwtService;
+  private final UserRepository userRepository;
 
-private final JwtService jwtService;
-private final UserRepository userRepository;
+  public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
+    this.jwtService = jwtService;
+    this.userRepository = userRepository;
+  }
 
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+      throws ServletException, IOException {
 
-public JwtAuthenticationFilter(JwtService jwtService, UserRepository userRepository) {
-this.jwtService = jwtService;
-this.userRepository = userRepository;
-}
+    final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      chain.doFilter(request, response);
+      return;
+    }
 
+    String token = authHeader.substring(7);
+    String email;
+    try {
+      email = jwtService.extractUsername(token);
+    } catch (Exception ex) {
+      // Invalid token -> proceed unauthenticated, public endpoints still accessible
+      chain.doFilter(request, response);
+      return;
+    }
 
-@Override
-protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-throws ServletException, IOException {
-final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-chain.doFilter(request, response);
-return;
-}
-String jwt = authHeader.substring(7);
-String email;
-try {
-email = jwtService.extractUsername(jwt);
-} catch (Exception ex) {
-chain.doFilter(request, response); // invalid token -> proceed without auth
-return;
-}
-if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-var user = userRepository.findByEmail(email).orElse(null);
-if (user != null) {
-var authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-SecurityContextHolder.getContext().setAuthentication(authToken);
-}
-}
-chain.doFilter(request, response);
-}
+    if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+      var userOpt = userRepository.findByEmail(email);
+      if (userOpt.isPresent() && jwtService.isTokenValid(token, userOpt.get())) {
+        User user = userOpt.get();
+        var authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+      }
+    }
+    chain.doFilter(request, response);
+  }
 }
