@@ -1,6 +1,8 @@
 package com.example.letsplay.user;
 
 import jakarta.validation.Valid;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,10 @@ public class UserService {
     this.encoder = encoder;
   }
 
+  public User getCurrentUser() {
+      return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
   public List<User> list() {
     return repo.findAll();
   }
@@ -32,6 +38,11 @@ public class UserService {
     if (u.getRole() == null) u.setRole(Role.USER);
     return repo.save(u);
   }
+
+   public void deleteCurrentUser() {
+        User currentUser = getCurrentUser();
+        delete(currentUser.getId());
+    }
 
   public void delete(String id) {
     repo.deleteById(id);

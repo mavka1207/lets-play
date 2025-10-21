@@ -3,6 +3,7 @@ package com.example.letsplay.user;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/users")
-@PreAuthorize("hasRole('ADMIN')")
+
 public class UserController {
 
   private final UserService service;
@@ -21,11 +22,18 @@ public class UserController {
   public UserController(UserService service) { this.service = service; }
 
   @GetMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public List<User> list() {
     return service.list();
   }
 
+  @GetMapping("/me")
+  public User getMe() {
+    return service.getCurrentUser();
+  }
+
   @GetMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public User get(@PathVariable String id) {
     return service.getById(id);
   }
@@ -38,7 +46,12 @@ public class UserController {
 
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public void delete(@PathVariable String id) {
     service.delete(id);
+  }
+  @DeleteMapping("/me")
+  public void deleteMe(@AuthenticationPrincipal User principal) {
+    service.deleteCurrentUser();
   }
 }
