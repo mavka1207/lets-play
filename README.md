@@ -63,28 +63,25 @@ It includes:
    ```
 
 3. **Build and run**
-   ```sh
-   ./mvnw clean install
-   ./mvnw spring-boot:run
-   ```
 
-4. **Access the API**
+   **For macOS / Linux:**
+   ```bash
+   ./mvnw clean install
+   export JWT_SECRET=dev-jwt-secret-key-2025 && ./mvnw spring-boot:run
+      ```
+
+   **For Windows:**
+      ```
+   mvnw.cmd clean install
+   set JWT_SECRET=dev-jwt-secret-key-2025 & mvnw.cmd spring-boot:run
+      ```
+
+4. **Use Postman to access the API**
    ```
    https://localhost:8443
    ```
        
-## Run with Maven Wrapper
 
-If Maven is not installed globally, you can still build and run the project using the provided Maven Wrapper.
-
-**For macOS / Linux:**
-```bash
-./mvnw clean install
-./mvnw spring-boot:run
-
-**For Windows:**
-mvnw.cmd clean install
-mvnw.cmd spring-boot:run
 
 ## API Endpoints
 
@@ -96,7 +93,7 @@ mvnw.cmd spring-boot:run
 
 ### Registering with a Role
 
-To register a user with a specific role (e.g., ADMIN), include the `role` field in your request body:
+To register a user with a specific role (e.g., ADMIN or USER), include the `role` field in your request body:
 
 ```json
 {

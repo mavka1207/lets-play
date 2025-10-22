@@ -39,7 +39,8 @@ public class UserService {
 
   public User create(@Valid User u) {
     u.setPassword(encoder.encode(u.getPassword()));
-    if (u.getRole() == null) u.setRole(Role.USER);
+    if (u.getRole() == null || (u.getRole() != Role.ADMIN && u.getRole() != Role.USER)) u.setRole(Role.USER);
+
     return repo.save(u);
   }
 

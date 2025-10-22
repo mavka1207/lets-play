@@ -23,13 +23,12 @@ public class AuthService {
     this.users = users; this.encoder = encoder; this.jwt = jwt;
   }
 
-  public String register(String name, String email, String rawPassword) {
+  public String register(String name, String email, String rawPassword, String roleStr) {
     users.findByEmail(email).ifPresent(u -> { throw new IllegalArgumentException("Email already in use"); });
     User u = new User();
     u.setName(name);
     u.setEmail(email);
     u.setPassword(encoder.encode(rawPassword));
-    u.setRole(Role.USER);
     users.save(u);
     return jwt.generateToken(u);
   }
