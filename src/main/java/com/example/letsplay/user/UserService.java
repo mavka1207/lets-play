@@ -6,6 +6,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.letsplay.user.dto.UpdateUserRequest;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -15,6 +17,7 @@ public class UserService {
 
   private final UserRepository repo;
   private final PasswordEncoder encoder;
+
 
   public UserService(UserRepository repo, PasswordEncoder encoder) {
     this.repo = repo;
@@ -46,5 +49,13 @@ public class UserService {
 
   public void delete(String id) {
     repo.deleteById(id);
+  }
+
+  public User updateCurrentUser(@Valid UpdateUserRequest req) {
+    User currentUser = getCurrentUser();
+    if (req.getName() != null) currentUser.setName(req.getName());
+    if (req.getEmail() != null) currentUser.setEmail(req.getEmail());
+    if (req.getPassword() != null) currentUser.setPassword(encoder.encode(req.getPassword()));
+    return repo.save(currentUser);
   }
 }

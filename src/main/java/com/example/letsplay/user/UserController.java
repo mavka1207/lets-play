@@ -5,6 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.example.letsplay.auth.JwtService;
+import com.example.letsplay.user.dto.UpdateUserRequest;
+import com.example.letsplay.user.dto.UserResponse;
+
+import java.util.Map;
 
 import java.util.List;
 
@@ -18,8 +23,21 @@ import java.util.List;
 public class UserController {
 
   private final UserService service;
+  private JwtService jwtService;
 
-  public UserController(UserService service) { this.service = service; }
+  public UserController(UserService service, JwtService jwtService) {
+    this.service = service;
+    this.jwtService = jwtService;
+  }
+@PutMapping("/me")
+public Map<String, Object> updateMe(@Valid @RequestBody UpdateUserRequest req) {
+  User updated = service.updateCurrentUser(req);
+  String newToken = jwtService.generateToken(updated);
+  return Map.of(
+      "user", UserResponse.from(updated),
+      "token", newToken
+  );
+} 
 
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
