@@ -53,7 +53,7 @@ It includes:
 
 1. **Clone the repository**
    ```sh
-   git clone <your-repo-url>
+   git clone https://01.gritlab.ax/git/kovsiien/lets-play.git
    cd lets-play
    ```
 
