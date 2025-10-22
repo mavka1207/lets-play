@@ -49,25 +49,29 @@ It includes:
 
 ---
 
-##  Setup & Run
+## Setup
 
 1. **Clone the repository**
-   ```bash
-   git clone <your-repository-url>
+   ```sh
+   git clone <your-repo-url>
    cd lets-play
+   ```
 
-2. **Build the project**
-   ```bash
-   ./mvn clean install
+2. **Generate a keystore for HTTPS**
+   ```sh
+   keytool -genkeypair -alias letsplay -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore src/main/resources/keystore.p12 -validity 3650 -storepass changeit
+   ```
 
-3. **Run the application**
-   ```bash
-   ./mvn spring-boot:run
+3. **Build and run**
+   ```sh
+   ./mvnw clean install
+   ./mvnw spring-boot:run
+   ```
 
 4. **Access the API**
-   ```arduino
-    https://localhost:8443  
-
+   ```
+   https://localhost:8443
+   ```
        
 ## Run with Maven Wrapper
 
@@ -82,32 +86,28 @@ If Maven is not installed globally, you can still build and run the project usin
 mvnw.cmd clean install
 mvnw.cmd spring-boot:run
 
-##  API Endpoints
+## API Endpoints
 
 **Authentication**
 | Method | Endpoint         | Access | Description                    |
 | ------ | ---------------- | ------ | ------------------------------ |
-| `POST` | `/auth/register` | Public | Register a new user            |
+| `POST` | `/auth/register` | Public | Register a new user (see below)|
 | `POST` | `/auth/login`    | Public | Authenticate and receive a JWT |
 
+### Registering with a Role
 
-**Users**
-| Method   | Endpoint      | Access          | Description    |
-| -------- | ------------- | --------------- | -------------- |
-| `GET`    | `/users`      | `ADMIN`         | Get all users  |
-| `GET`    | `/users/{id}` | `ADMIN`         | Get user by ID |
-| `PUT`    | `/users/{id}` | `ADMIN` or Self | Update user    |
-| `DELETE` | `/users/{id}` | `ADMIN`         | Delete user    |
+To register a user with a specific role (e.g., ADMIN), include the `role` field in your request body:
 
+```json
+{
+  "name": "adminuser",
+  "email": "admin@example.com",
+  "password": "yourpassword",
+  "role": "ADMIN"
+}
+```
 
-**Products**
-| Method   | Endpoint         | Access             | Description          |
-| -------- | ---------------- | ------------------ | -------------------- |
-| `GET`    | `/products`      | Public             | Get all products     |
-| `GET`    | `/products/{id}` | Public             | Get product by ID    |
-| `POST`   | `/products`      | Authenticated User | Create a new product |
-| `PUT`    | `/products/{id}` | `ADMIN` or Owner   | Update a product     |
-| `DELETE` | `/products/{id}` | `ADMIN` or Owner   | Delete a product     |
+If `role` is omitted or invalid, the user will be registered with the default `USER` role.
 
 
 ##  Security Measures
@@ -125,13 +125,6 @@ mvnw.cmd spring-boot:run
 
 This project uses constructor-based dependency injection instead of field injection (@Autowired).
 
-**Why this matters:**
-
-   **Immutability:** Dependencies are declared final and cannot be reassigned.
-
-   **Clarity:** All dependencies are visible and required in the constructor.
-
-   **Testability:** Easier to pass mock objects for unit testing.
 
 ## Author
 
