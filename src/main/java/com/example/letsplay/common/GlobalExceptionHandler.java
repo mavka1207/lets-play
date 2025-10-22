@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
   /** Final catch-all: per requirements return 400 (avoid 5xx). */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiError> handleAny(Exception ex, HttpServletRequest req) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(new ApiError(400, "Bad Request", ex.getMessage(), req.getRequestURI()));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(new ApiError(404, "Not found", ex.getMessage(), req.getRequestURI()));
   }
 }

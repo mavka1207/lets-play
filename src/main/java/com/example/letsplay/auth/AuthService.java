@@ -3,6 +3,8 @@ package com.example.letsplay.auth;
 import com.example.letsplay.user.Role;
 import com.example.letsplay.user.User;
 import com.example.letsplay.user.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,8 @@ public class AuthService {
   private final UserRepository users;
   private final PasswordEncoder encoder;
   private final JwtService jwt;
-
+  
+  @Autowired
   public AuthService(UserRepository users, PasswordEncoder encoder, JwtService jwt) {
     this.users = users; this.encoder = encoder; this.jwt = jwt;
   }

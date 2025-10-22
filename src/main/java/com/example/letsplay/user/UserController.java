@@ -1,6 +1,8 @@
 package com.example.letsplay.user;
 
 import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,8 +25,9 @@ import java.util.List;
 public class UserController {
 
   private final UserService service;
-  private JwtService jwtService;
+  private final JwtService jwtService;
 
+  @Autowired
   public UserController(UserService service, JwtService jwtService) {
     this.service = service;
     this.jwtService = jwtService;

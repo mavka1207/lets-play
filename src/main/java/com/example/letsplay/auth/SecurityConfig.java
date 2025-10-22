@@ -1,6 +1,8 @@
 package com.example.letsplay.auth;
 
 import com.example.letsplay.user.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,7 +32,8 @@ import java.util.List;
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthFilter;
-
+  
+  @Autowired
   public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
     this.jwtAuthFilter = jwtAuthFilter;
   }

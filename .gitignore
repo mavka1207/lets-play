@@ -22,12 +22,12 @@ target/
 
 
 # SSL / Keys
-*.p12
 *.jks
-*.keystore
 *.pem
 *.crt
 *.key
+*.p12
+*.keystore
 
 # Spring Boot configs (кроме дефолтного примера)
 application-*.yml

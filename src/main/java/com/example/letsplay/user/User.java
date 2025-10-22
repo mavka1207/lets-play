@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -26,17 +27,20 @@ public class User implements UserDetails {
   @Id
   private String id;
 
+  @NotNull
   @NotBlank
   @Size(min = 2, max = 100)
   @Field("name")
   private String name;
 
+  @NotNull
   @NotBlank
   @Email
   @Indexed(unique = true)
   @Field("email")
   private String email;
 
+  @NotNull
   @NotBlank
   @Size(min = 8, max = 200)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
