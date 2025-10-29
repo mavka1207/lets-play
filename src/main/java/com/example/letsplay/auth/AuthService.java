@@ -1,14 +1,14 @@
 package com.example.letsplay.auth;
 
-import com.example.letsplay.user.Role;
+//import com.example.letsplay.user.Role;
 import com.example.letsplay.user.User;
 import com.example.letsplay.user.UserRepository;
-
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
+//import java.util.NoSuchElementException;
 
 /** Creates users, validates credentials, issues JWTs. */
 @Service
@@ -34,10 +34,12 @@ public class AuthService {
   }
 
   public String login(String email, String rawPassword) {
-    User u = users.findByEmail(email).orElseThrow(() -> new NoSuchElementException("Invalid credentials"));
+    User u = users.findByEmail(email).orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
     if (!encoder.matches(rawPassword, u.getPassword())) {
-      throw new NoSuchElementException("Invalid credentials");
+      throw new BadCredentialsException("Invalid credentials");
     }
     return jwt.generateToken(u);
   }
 }
+
+// AuthenticationException

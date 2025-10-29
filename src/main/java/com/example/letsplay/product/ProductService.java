@@ -38,6 +38,10 @@ public class ProductService {
   }
 
   public void delete(String id) {
+    // Important: deleteById() does not fail for missing id — check first.
+        if (!repo.existsById(id)) {
+            throw new NoSuchElementException("Product not found");
+        }
     repo.deleteById(id);
   }
 }

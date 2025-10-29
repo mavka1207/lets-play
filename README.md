@@ -91,20 +91,19 @@ It includes:
 | `POST` | `/auth/register` | Public | Register a new user (see below)|
 | `POST` | `/auth/login`    | Public | Authenticate and receive a JWT |
 
-### Registering with a Role
+### Registering syntax
 
-To register a user with a specific role (e.g., ADMIN or USER), include the `role` field in your request body:
+To register a user send the follwoing data in the request body:
 
 ```json
 {
   "name": "adminuser",
   "email": "admin@example.com",
-  "password": "yourpassword",
-  "role": "ADMIN"
+  "password": "yourpassword"
 }
 ```
 
-If `role` is omitted or invalid, the user will be registered with the default `USER` role.
+The user will always be registered with the default `USER` role to prevent uncontrolled admin creation. User role can be changed directly in MongoDB.
 
 
 ##  Security Measures

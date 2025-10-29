@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+//import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/products")
@@ -72,6 +73,6 @@ public class ProductController {
   @PreAuthorize("hasRole('ADMIN') or @ownership.isProductOwner(#id, principal.id)")
   public ResponseEntity<Void> delete(@PathVariable String id) {
     service.delete(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 }
