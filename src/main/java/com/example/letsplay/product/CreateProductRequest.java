@@ -1,6 +1,7 @@
 package com.example.letsplay.product;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -9,10 +10,10 @@ public class CreateProductRequest {
   @NotBlank(message = "name must not be blank")
   @Size(min = 2, max = 100, message = "name size must be between 2 and 100")
   private String name;
-
+  @NotBlank(message = "description must not be blank")
   @Size(max = 500, message = "description size must be <= 500")
   private String description;
-
+  @NotNull(message = "price must not be null")
   @Positive(message = "price must be positive")
   private Double price;
 

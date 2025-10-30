@@ -42,6 +42,22 @@ public Map<String, Object> updateMe(@Valid @RequestBody UpdateUserRequest req) {
   );
 } 
 
+@PutMapping("/{id}")
+@PreAuthorize("hasRole('ADMIN')")
+public UserResponse update(
+    @PathVariable String id,
+    @Valid @RequestBody UpdateUserRequest req
+) {
+  User updated = service.getById(id);
+  if (req.getName() != null) updated.setName(req.getName());
+  if (req.getEmail() != null) updated.setEmail(req.getEmail()); 
+  if (!req.getPassword().isEmpty()) {
+    throw new IllegalArgumentException("Updating password is not allowed");
+  }
+  return UserResponse.from(updated);
+
+}
+
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
   public List<User> list() {
@@ -59,11 +75,11 @@ public Map<String, Object> updateMe(@Valid @RequestBody UpdateUserRequest req) {
     return service.getById(id);
   }
 
-  @ResponseStatus(HttpStatus.CREATED)
-  @PostMapping
-  public User create(@Valid @RequestBody User u) {
-    return service.create(u);
-  }
+  // @ResponseStatus(HttpStatus.CREATED)
+  // @PostMapping
+  // public User create(@Valid @RequestBody User u) {
+  //   return service.create(u);
+  // }
 
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping("/{id}")

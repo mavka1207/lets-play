@@ -1,6 +1,5 @@
 package com.example.letsplay.auth;
 
-//import com.example.letsplay.user.Role;
 import com.example.letsplay.user.User;
 import com.example.letsplay.user.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-//import java.util.NoSuchElementException;
+
 
 /** Creates users, validates credentials, issues JWTs. */
 @Service
@@ -23,7 +22,7 @@ public class AuthService {
     this.users = users; this.encoder = encoder; this.jwt = jwt;
   }
 
-  public String register(String name, String email, String rawPassword, String roleStr) {
+  public String register(String name, String email, String rawPassword) {
     users.findByEmail(email).ifPresent(u -> { throw new IllegalArgumentException("Email already in use"); });
     User u = new User();
     u.setName(name);
@@ -41,5 +40,3 @@ public class AuthService {
     return jwt.generateToken(u);
   }
 }
-
-// AuthenticationException

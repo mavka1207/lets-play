@@ -19,7 +19,7 @@ public class AuthController {
 
   @PostMapping("/register")
   public Map<String, String> register(@Valid @RequestBody RegisterRequest req) {
-    String token = auth.register(req.getName(), req.getEmail(), req.getPassword(), req.getRole());
+    String token = auth.register(req.getName(), req.getEmail(), req.getPassword());
     return Map.of("token", token);
   }
 

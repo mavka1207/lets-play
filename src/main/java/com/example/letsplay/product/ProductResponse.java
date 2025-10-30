@@ -9,7 +9,7 @@ public class ProductResponse {
   private String name;
   private String description;
   private Double price;
-  // private String userId;
+ private String userId;
 
   public static ProductResponse from(Product p) {
     ProductResponse r = new ProductResponse();
@@ -18,7 +18,7 @@ public class ProductResponse {
     r.setName(p.getName());
     r.setDescription(p.getDescription());
     r.setPrice(p.getPrice());
-    // r.setUserId(p.getUserId());
+     r.setUserId(p.getUserId());
     return r;
   }
 
@@ -34,6 +34,6 @@ public class ProductResponse {
   public Double getPrice() { return price; }
   public void setPrice(Double price) { this.price = price; }
 
-  // public String getUserId() { return userId; }
-  // public void setUserId(String userId) { this.userId = userId; }
+   public String getUserId() { return userId; }
+  public void setUserId(String userId) { this.userId = userId; }
 }

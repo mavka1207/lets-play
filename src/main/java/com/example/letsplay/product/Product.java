@@ -14,6 +14,7 @@ public class Product {
   @Id
   private String id;
 
+  
   @NotBlank
   @Size(min = 2, max = 100)
   @Field("name")

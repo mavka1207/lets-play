@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-//import java.util.NoSuchElementException;
+
 
 @RestController
 @RequestMapping("/products")
@@ -33,6 +33,14 @@ public class ProductController {
   @GetMapping("/{id}")
   public ProductResponse get(@PathVariable String id) {
     return ProductResponse.from(service.getById(id));
+  }
+
+  @GetMapping("/me")
+  public List<ProductResponse> listMyProducts(@AuthenticationPrincipal User principal) {
+      return service.list().stream()
+              .filter(p -> p.getUserId().equals(principal.getId()))
+              .map(ProductResponse::from)
+              .toList();
   }
 
   // Create (auth only), userId берём из principal
