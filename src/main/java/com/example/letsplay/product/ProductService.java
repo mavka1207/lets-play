@@ -25,7 +25,7 @@ public class ProductService {
   }
 
   public Product create(Product p) {
-    // Валидацию полей делаем на DTO в контроллере
+    
     return repo.save(p);
   }
 

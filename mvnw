@@ -4,7 +4,7 @@
 set -euf
 [ "${MVNW_VERBOSE-}" != debug ] || set -x
 
-# Определяем путь до java
+
 if [ -z "${JAVA_HOME-}" ]; then
   JAVA_CMD="$(command -v java || true)"
 else
@@ -16,14 +16,14 @@ if [ ! -x "${JAVA_CMD-}" ]; then
   exit 1
 fi
 
-# Определяем путь до Maven
+
 WRAPPER_DIR="$(dirname "$0")/.mvn/wrapper"
 PROPERTIES_FILE="$WRAPPER_DIR/maven-wrapper.properties"
 
 distributionUrl=$(grep -E "^distributionUrl=" "$PROPERTIES_FILE" | cut -d'=' -f2)
 MAVEN_HOME="$HOME/.m2/wrapper/dists/apache-maven-3.9.11"
 
-# Скачиваем Maven, если он ещё не установлен
+
 if [ ! -d "$MAVEN_HOME" ]; then
   echo "Downloading Maven 3.9.11..."
   mkdir -p "$MAVEN_HOME"

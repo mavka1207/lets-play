@@ -29,7 +29,7 @@ hs_err_pid*
 *.p12
 *.keystore
 
-# Spring Boot configs (кроме дефолтного примера)
+# Spring Boot configs 
 application-*.yml
 application-*.properties
 !application.properties

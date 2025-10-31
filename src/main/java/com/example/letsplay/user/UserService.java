@@ -86,11 +86,6 @@ public User updateByAdmin(String id, UpdateUserRequest req) {
     throw new IllegalArgumentException("Updating password is not allowed");
   }
 
-  // Если в DTO есть роль и ты хочешь разрешить администратору её менять:
-  // if (req.getRole() != null) {
-  //   u.setRole(Role.valueOf(req.getRole()));
-  // }
-
   return repo.save(u); // <- ВАЖНО: сохраняем изменения в MongoDB
 }
 }
