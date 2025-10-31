@@ -12,6 +12,7 @@ import com.example.letsplay.user.dto.UpdateUserRequest;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.springframework.util.StringUtils;
 
 /** Application service for user management (admin-facing helpers). */
 @Service
@@ -70,5 +71,26 @@ public class UserService {
   u.setRole(Role.USER);
   return repo.save(u);
 }
+public User updateByAdmin(String id, UpdateUserRequest req) {
+  User u = getById(id); // бросит NoSuchElementException -> у тебя это мапится в 404
 
+  if (StringUtils.hasText(req.getName())) {
+    u.setName(req.getName().trim());
+  }
+  if (StringUtils.hasText(req.getEmail())) {
+    u.setEmail(req.getEmail().trim().toLowerCase());
+  }
+
+  // Запрет изменения пароля через этот эндпоинт
+  if (req.getPassword() != null && !req.getPassword().isEmpty()) {
+    throw new IllegalArgumentException("Updating password is not allowed");
+  }
+
+  // Если в DTO есть роль и ты хочешь разрешить администратору её менять:
+  // if (req.getRole() != null) {
+  //   u.setRole(Role.valueOf(req.getRole()));
+  // }
+
+  return repo.save(u); // <- ВАЖНО: сохраняем изменения в MongoDB
+}
 }

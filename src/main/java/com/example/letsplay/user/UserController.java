@@ -43,21 +43,15 @@ public Map<String, Object> updateMe(@Valid @RequestBody UpdateUserRequest req) {
   );
 } 
 
-@PutMapping("/{id}")
-@PreAuthorize("hasRole('ADMIN')")
-public UserResponse update(
-    @PathVariable String id,
-    @Valid @RequestBody UpdateUserRequest req
-) {
-  User updated = service.getById(id);
-  if (req.getName() != null) updated.setName(req.getName());
-  if (req.getEmail() != null) updated.setEmail(req.getEmail()); 
-  if (!req.getPassword().isEmpty()) {
-    throw new IllegalArgumentException("Updating password is not allowed");
+  @PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public UserResponse update(
+      @PathVariable String id,
+      @Valid @RequestBody UpdateUserRequest req
+  ) {
+    User saved = service.updateByAdmin(id, req); // теперь изменения сохраняются
+    return UserResponse.from(saved);
   }
-  return UserResponse.from(updated);
-
-}
 
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
