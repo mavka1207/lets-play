@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.example.letsplay.auth.JwtService;
+import com.example.letsplay.user.dto.AdminCreateUserRequest;
 import com.example.letsplay.user.dto.UpdateUserRequest;
 import com.example.letsplay.user.dto.UserResponse;
 
@@ -75,11 +76,14 @@ public UserResponse update(
     return service.getById(id);
   }
 
-  // @ResponseStatus(HttpStatus.CREATED)
-  // @PostMapping
-  // public User create(@Valid @RequestBody User u) {
-  //   return service.create(u);
-  // }
+  //Admin creates users here
+   @ResponseStatus(HttpStatus.CREATED)
+   @PostMapping
+   @PreAuthorize("hasRole('ADMIN')")
+   public UserResponse create(@Valid @RequestBody AdminCreateUserRequest req) {
+    User saved = service.createByAdmin(req);
+     return UserResponse.from(saved); // ensure UserResponse hides password
+   }
 
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping("/{id}")

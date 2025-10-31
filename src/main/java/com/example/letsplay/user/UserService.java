@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.letsplay.user.dto.AdminCreateUserRequest;
 import com.example.letsplay.user.dto.UpdateUserRequest;
 
 import java.util.List;
@@ -60,4 +61,14 @@ public class UserService {
     if (req.getPassword() != null) currentUser.setPassword(encoder.encode(req.getPassword()));
     return repo.save(currentUser);
   }
+
+  public User createByAdmin(@Valid AdminCreateUserRequest r) {
+  User u = new User();
+  u.setName(r.getName());
+  u.setEmail(r.getEmail().toLowerCase());
+  u.setPassword(encoder.encode(r.getPassword()));
+  u.setRole(Role.USER);
+  return repo.save(u);
+}
+
 }
